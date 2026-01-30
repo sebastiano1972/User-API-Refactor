@@ -1,11 +1,38 @@
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication
+   .CreateBuilder(args);
 
-// Add services to the container.
+builder
+   .Services
+   .AddControllers();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder
+   .Services
+   .AddEndpointsApiExplorer();
+
+builder
+   .Services
+   .AddSwaggerGen(opt =>
+                  {
+                      opt.EnableAnnotations();
+                      opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+
+                      Assembly
+                         .GetExecutingAssembly()
+                         .GetReferencedAssemblies()
+                         .Where(a => a.Name!.StartsWith("Tests.User.", StringComparison.InvariantCultureIgnoreCase))
+                         .Select(a => Path.Combine(AppContext.BaseDirectory, $"{a.Name}.xml"))
+                         .Where(File.Exists)
+                         .ToList()
+                         .ForEach(path => opt.IncludeXmlComments(path));
+                  });
+
+builder
+   .Services
+   .AddInfrastructure();
+
+builder
+   .Services
+   .AddApplication();
 
 var app = builder.Build();
 

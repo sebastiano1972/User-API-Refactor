@@ -1,85 +1,126 @@
-using Microsoft.AspNetCore.Mvc;
-using Tests.User.Api.Controllers;
+namespace Tests.User.Api.Test;
 
-namespace Tests.User.Api.Test
+public class UserControllerTests
 {
-    public class UserControllerTests
+    [Fact]
+    public async Task Should_Return_User_When_Valid_Id_Passed()
     {
-        [Fact]
-        public async Task Should_Return_User_When_Valid_Id_Passed()
-        {
-            DatabaseContext database = new DatabaseContext();
-            Models.User user = new Models.User
-            {
-                FirstName = "Test",
-                LastName = "User",
-                Age = "20"
-            };
-            database.Users.Add(user);
-            database.SaveChanges();
+        const int userId = 1;
 
-            UserController controller = new UserController();
-            IActionResult result = controller.Get(user.Id);
-            OkObjectResult ok = result as OkObjectResult;           
+        var user = new global::Tests.User.Domain.Entities.User
+                   {
+                       FirstName = "John",
+                       LastName = "Doe",
+                       Age = 20
+                   };
 
-            Assert.NotNull(ok);
-            Assert.Equal(200, ok.StatusCode);            
-        }
+        var mediator = Substitute.For<IMediator>();
 
-        [Fact]
-        public async Task Should_Return_Valid_When_User_Created()
-        {
-            UserController controller = new UserController();
-            IActionResult result = controller.Create("Test", "User", "20");
+        mediator
+           .Send(Arg.Is<GetUserRequest>(r=>r.Id == userId), CancellationToken.None)
+           .Returns(Task.FromResult(GetUserResponse.Success(user)));
 
-            OkResult ok = result as OkResult;
+        var controller = new UserController(mediator);
+        
+        var result = await controller
+                        .Get(userId, CancellationToken.None);
 
-            Assert.NotNull(ok);
-            Assert.Equal(200, ok.StatusCode);
-        }
+        var ok = result as OkObjectResult;           
 
-        [Fact]
-        public async Task Should_Return_Valid_When_User_Updated()
-        {
-            DatabaseContext database = new DatabaseContext();
-            Models.User user = new Models.User
-            {
-                FirstName = "Test",
-                LastName = "User",
-                Age = "20"
-            };
-            database.Users.Add(user);
-            database.SaveChanges();
+        Assert.NotNull(ok);
+        Assert.Equal(200, ok.StatusCode);
+    }
 
-            UserController controller = new UserController();
-            IActionResult result = controller.Update(user.Id, "Updated", "User", "21");
+    [Fact]
+    public async Task Should_Return_Valid_When_User_Created()
+    {
+        var createUserDto = new CreateUserDto
+                   {
+                       FirstName = "John",
+                       LastName = "Doe",
+                       Age = 20
+                   };
 
-            OkResult ok = result as OkResult;
+        var user = new global::Tests.User.Domain.Entities.User
+                   {
+                       FirstName = createUserDto.FirstName,
+                       LastName = createUserDto.LastName,
+                       Age = createUserDto.Age!.Value
+        };
 
-            Assert.NotNull(ok);
-            Assert.Equal(200, ok.StatusCode);
-        }
+        var mediator = Substitute.For<IMediator>();
 
-        [Fact]
-        public async Task Should_Return_Valid_When_User_Removed()
-        {
-            DatabaseContext database = new DatabaseContext();
-            Models.User user = new Models.User
-            {
-                FirstName = "Test",
-                LastName = "User",
-                Age = "20"
-            };
-            database.Users.Add(user);
-            database.SaveChanges();
+        mediator
+           .Send(Arg.Is<CreateUserRequest>(r => r.Payload.FirstName == createUserDto.FirstName
+                                             && r.Payload.LastName == createUserDto.LastName
+                                             && r.Payload.Age == createUserDto.Age), CancellationToken.None)
+           .Returns(Task.FromResult(CreateUserResponse.Success(user)));
 
-            UserController controller = new UserController();
-            IActionResult result = controller.Delete(user.Id);
+        var controller = new UserController(mediator);
 
-            OkResult ok = result as OkResult;
+        var result = await controller.Create(createUserDto, CancellationToken.None);
 
-            Assert.NotNull(ok);
-            Assert.Equal(200, ok.StatusCode);
-        }
+        var ok = result as CreatedAtActionResult;
+
+        Assert.NotNull(ok);
+        Assert.Equal(201, ok.StatusCode);
+    }
+
+    [Fact]
+    public async Task Should_Return_Valid_When_User_Updated()
+    {
+        var updateUserDto = new UpdateUserDto
+                            {
+                                FirstName = "John",
+                                LastName = "Doe",
+                                Age = 20
+                            };
+
+        var user = new global::Tests.User.Domain.Entities.User
+                   {
+                       Id = 1,
+                       FirstName = updateUserDto.FirstName,
+                       LastName = updateUserDto.LastName,
+                       Age = updateUserDto.Age!.Value
+                   };
+
+        var mediator = Substitute.For<IMediator>();
+
+        mediator
+           .Send(Arg.Is<UpdateUserRequest>(r => r.Payload.FirstName == updateUserDto.FirstName
+                                             && r.Payload.LastName == updateUserDto.LastName
+                                             && r.Payload.Age == updateUserDto.Age), CancellationToken.None)
+           .Returns(Task.FromResult(UpdateUserResponse.Success(user)));
+
+        var controller = new UserController(mediator);
+
+        var result = await controller.Update(user.Id, updateUserDto, CancellationToken.None);
+
+        var ok = result as OkObjectResult;
+
+        Assert.NotNull(ok);
+        Assert.Equal(200, ok.StatusCode);
+    }
+
+    [Fact]
+    public async Task Should_Return_Valid_When_User_Removed()
+    {
+        const int userId = 1; 
+
+        var mediator = Substitute.For<IMediator>();
+
+        mediator
+           .Send(Arg.Is<DeleteUserRequest>(r => r.Id == userId), CancellationToken.None)
+           .Returns(Task.FromResult(DeleteUserResponse.Success()));
+
+
+        var controller = new UserController(mediator);
+
+        var result = await controller.Delete(userId, CancellationToken.None);
+
+        var noContent = result as NoContentResult;
+
+        Assert.NotNull(noContent);
+        Assert.Equal(204, noContent.StatusCode);
     }
 }
