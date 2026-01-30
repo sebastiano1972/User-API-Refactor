@@ -14,7 +14,7 @@ internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
 
             var user = request
                       .Payload
-                      .ToModel();
+                      .ToEntity();
 
             var repository = unitOfWork
                .GetRepository<Domain.Entities.User>();

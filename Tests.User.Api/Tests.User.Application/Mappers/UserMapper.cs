@@ -4,7 +4,7 @@ namespace Tests.User.Application.Mappers;
 
 public static class UserMapper
 {
-    public static Domain.Entities.User ToModel(this CreateUserDto createUserDto)
+    public static Domain.Entities.User ToEntity(this CreateUserDto createUserDto)
     {
         return new Domain.Entities.User
                {
