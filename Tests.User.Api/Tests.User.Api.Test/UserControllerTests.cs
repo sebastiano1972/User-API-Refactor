@@ -29,6 +29,9 @@ public class UserControllerTests
 
         Assert.NotNull(ok);
         Assert.Equal(200, ok.StatusCode);
+        Assert.Equal(user.FirstName, ((UserDto)ok.Value!).FirstName);
+        Assert.Equal(user.LastName, ((UserDto)ok.Value!).LastName);
+        Assert.Equal(user.Age, ((UserDto)ok.Value!).Age);
     }
 
     [Fact]
@@ -64,6 +67,9 @@ public class UserControllerTests
 
         Assert.NotNull(ok);
         Assert.Equal(201, ok.StatusCode);
+        Assert.Equal(user.FirstName, ((UserDto)ok.Value!).FirstName);
+        Assert.Equal(user.LastName, ((UserDto)ok.Value!).LastName);
+        Assert.Equal(user.Age, ((UserDto)ok.Value!).Age);
     }
 
     [Fact]
@@ -100,6 +106,9 @@ public class UserControllerTests
 
         Assert.NotNull(ok);
         Assert.Equal(200, ok.StatusCode);
+        Assert.Equal(user.FirstName, ((UserDto)ok.Value!).FirstName);
+        Assert.Equal(user.LastName, ((UserDto)ok.Value!).LastName);
+        Assert.Equal(user.Age, ((UserDto)ok.Value!).Age);
     }
 
     [Fact]
