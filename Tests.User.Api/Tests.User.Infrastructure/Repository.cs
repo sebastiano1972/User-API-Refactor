@@ -2,18 +2,28 @@
 
 internal sealed class Repository<T>(DatabaseContext context) : IRepository<T> where T : Entity
 {
-    public async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<T?> GetByAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
     {
-        return await context
-                    .Set<T>()
-                    .FirstOrDefaultAsync(e => e.Id == id, cancellationToken)
+        var query = specification.Apply(context.Set<T>());
+
+        query = specification.Traceable
+                    ? query.AsTracking()
+                    : query.AsNoTracking();
+
+        return await query
+                    .FirstOrDefaultAsync(cancellationToken)
                     .ConfigureAwait(false);
     }
 
-    public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<List<T>> GetAllByAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
     {
-        return await context
-                    .Set<T>()
+        var query = specification.Apply(context.Set<T>());
+
+        query = specification.Traceable
+                    ? query.AsTracking()
+                    : query.AsNoTracking();
+
+        return await query
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
     }
