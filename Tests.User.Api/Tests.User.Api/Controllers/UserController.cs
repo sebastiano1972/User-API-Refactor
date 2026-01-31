@@ -1,4 +1,7 @@
-﻿namespace Tests.User.Api.Controllers;
+﻿using Microsoft.VisualBasic.FileIO;
+using Tests.User.Domain.Exceptions;
+
+namespace Tests.User.Api.Controllers;
 
 /// <summary>
 ///     The user controller
@@ -29,7 +32,7 @@ public sealed class UserController(IMediator mediator) : Controller
             return Ok(response.Payload!.Select(u => u.ToDto()).ToList());
         }
 
-        return Problem(statusCode: response.Exception is InvalidOperationException ? 400 : 500,
+        return Problem(statusCode: response.Exception is MalformedOrderByParameterException ? 400 : 500,
                        title: "Cannot retrieve users list.",
                        detail: response.Exception!.Message);
     }

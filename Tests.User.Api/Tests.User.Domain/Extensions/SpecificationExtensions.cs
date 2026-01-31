@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Tests.User.Domain.Exceptions;
 
 namespace Tests.User.Domain.Extensions;
 
@@ -12,12 +13,12 @@ internal static class SpecificationExtensions
         {
             if (propertyName[0] != '+' && propertyName[0] != '-')
             {
-                throw new InvalidOperationException($"The ordering property {propertyName} must be prefixed by a + or a - symbol.");
+                throw new MalformedOrderByParameterException($"The ordering property {propertyName} must be prefixed by a + or a - symbol.");
             }
 
             if (!accessors.ContainsKey(propertyName[1..]))
             {
-                throw new InvalidOperationException($"Unknown ordering property {propertyName[1..]}.");
+                throw new MalformedOrderByParameterException($"Unknown ordering property {propertyName[1..]}.");
             }
 
             if (firstIteration)
