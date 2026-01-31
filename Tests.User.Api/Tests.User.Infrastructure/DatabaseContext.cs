@@ -12,16 +12,6 @@ internal class DatabaseContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder
-           .Entity<Tests.User.Domain.Entities.User>()
-           .ToTable("Users");
-
-        modelBuilder
-           .Entity<Tests.User.Domain.Entities.User>()
-           .Property(u => u.FirstName).HasMaxLength(255);
-
-        modelBuilder
-           .Entity<Tests.User.Domain.Entities.User>()
-           .Property(u => u.LastName).HasMaxLength(255);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
     }
 }
