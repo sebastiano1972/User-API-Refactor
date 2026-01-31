@@ -1,7 +1,49 @@
+using Tests.User.Api.Parameters;
+using Tests.User.Application.Features.Users.Queries.GetUsers;
+
 namespace Tests.User.Api.Test;
+
+using User = Domain.Entities.User;
 
 public class UserControllerTests
 {
+    [Fact]
+    public async Task Should_Return_All_Users()
+    {
+        var users = new List<User>
+                    {
+                        new ()
+                        {
+                            FirstName = "John",
+                            LastName = "Doe",
+                            Age = 20
+                        },
+                        new ()
+                        {
+                            FirstName = "Jane",
+                            LastName = "Doe",
+                            Age = 22
+                        },
+                    };
+
+        var mediator = Substitute.For<IMediator>();
+
+        mediator
+           .Send(Arg.Is<GetUsersRequest>(r => r.Page == 0 && r.PageSize == 1), CancellationToken.None)
+           .Returns(Task.FromResult(GetUsersResponse.Success(users)));
+
+        var controller = new UserController(mediator);
+
+        var result = await controller
+                        .GetAll(new PaginationParameters { Page = 0, PageSize = 1}, CancellationToken.None);
+
+        var ok = result as OkObjectResult;
+
+        Assert.NotNull(ok);
+        Assert.Equal(200, ok.StatusCode);
+        Assert.Equal(users.Count, ((List<UserDto>)ok.Value!).Count);
+    }
+
     [Fact]
     public async Task Should_Return_User_When_Valid_Id_Passed()
     {

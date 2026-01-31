@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Tests.User.Application.Abstractions;
+using Tests.User.Domain.Enums;
 using Tests.User.Domain.Specifications;
 
 namespace Tests.User.Application.Features.Users.Commands.UpdateUser;
@@ -16,7 +17,7 @@ internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger,
                .GetRepository<Domain.Entities.User>();
 
             var user = await repository
-                            .GetByAsync(new UserById(request.Id), cancellationToken)
+                            .GetByAsync(new UserById(request.Id, IsTraceable.Yes), cancellationToken)
                             .ConfigureAwait(false);
 
             if (user == null)

@@ -9,11 +9,30 @@
 public sealed class UserController(IMediator mediator) : Controller
 {
     /// <summary>
+    ///     Gets all users
+    /// </summary>
+    /// <param name="paginationParameters">The pagination parameters</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    [HttpGet]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto[]))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> GetAll([FromQuery] PaginationParameters paginationParameters, CancellationToken cancellationToken)
+    {
+        var response = await mediator
+                            .Send(new GetUsersRequest(paginationParameters.Page, paginationParameters.PageSize), cancellationToken)
+                            .ConfigureAwait(false);
+
+        return response.IsSuccessful
+                   ? Ok(response.Payload!.Select(u => u.ToDto()).ToList())
+                   : Problem(statusCode: 500, title: "Cannot retrieve user.", detail: response.Exception!.Message);
+    }
+
+    /// <summary>
     ///     Gets a user
     /// </summary>
     /// <param name="id">ID of the user</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    /// <returns></returns>
     [HttpGet("id:int")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
@@ -40,7 +59,6 @@ public sealed class UserController(IMediator mediator) : Controller
     /// </summary>
     /// <param name="createUserDto">An object representing the user that is going to be created.</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    /// <returns></returns>
     [HttpPost]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -68,7 +86,6 @@ public sealed class UserController(IMediator mediator) : Controller
     /// <param name="id">ID of the user</param>
     /// <param name="updateUserDto">An object representing the user that is going to be updated.</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    /// <returns></returns>
     [HttpPut("{id:int}")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -101,7 +118,6 @@ public sealed class UserController(IMediator mediator) : Controller
     /// </summary>
     /// <param name="id">ID of the user</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    /// <returns></returns>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
