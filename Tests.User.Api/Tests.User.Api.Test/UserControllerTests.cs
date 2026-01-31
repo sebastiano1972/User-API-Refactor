@@ -49,7 +49,7 @@ public class UserControllerTests
     {
         const int userId = 1;
 
-        var user = new global::Tests.User.Domain.Entities.User
+        var user = new User
                    {
                        FirstName = "John",
                        LastName = "Doe",
@@ -86,7 +86,7 @@ public class UserControllerTests
                        Age = 20
                    };
 
-        var user = new global::Tests.User.Domain.Entities.User
+        var user = new User
                    {
                        FirstName = createUserDto.FirstName,
                        LastName = createUserDto.LastName,
@@ -124,7 +124,7 @@ public class UserControllerTests
                                 Age = 20
                             };
 
-        var user = new global::Tests.User.Domain.Entities.User
+        var user = new User
                    {
                        Id = 1,
                        FirstName = updateUserDto.FirstName,
