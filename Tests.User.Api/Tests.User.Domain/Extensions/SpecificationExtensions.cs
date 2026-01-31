@@ -10,6 +10,16 @@ internal static class SpecificationExtensions
 
         foreach (var propertyName in orderBy.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
         {
+            if (propertyName[0] != '+' && propertyName[0] != '-')
+            {
+                throw new InvalidOperationException($"The ordering property {propertyName} must be prefixed by a + or a - symbol.");
+            }
+
+            if (!accessors.ContainsKey(propertyName[1..]))
+            {
+                throw new InvalidOperationException($"Unknown ordering property {propertyName[1..]}.");
+            }
+
             if (firstIteration)
             {
                 query = propertyName[0] == '+'

@@ -16,6 +16,7 @@ public sealed class UserController(IMediator mediator) : Controller
     [HttpGet]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto[]))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> GetAll([FromQuery] PaginationParameters paginationParameters, CancellationToken cancellationToken)
     {
@@ -23,9 +24,14 @@ public sealed class UserController(IMediator mediator) : Controller
                             .Send(new GetUsersRequest(paginationParameters.Page, paginationParameters.PageSize, paginationParameters.OrderBy), cancellationToken)
                             .ConfigureAwait(false);
 
-        return response.IsSuccessful
-                   ? Ok(response.Payload!.Select(u => u.ToDto()).ToList())
-                   : Problem(statusCode: 500, title: "Cannot retrieve user.", detail: response.Exception!.Message);
+        if (response.IsSuccessful)
+        {
+            return Ok(response.Payload!.Select(u => u.ToDto()).ToList());
+        }
+
+        return Problem(statusCode: response.Exception is InvalidOperationException ? 400 : 500,
+                       title: "Cannot retrieve users list.",
+                       detail: response.Exception!.Message);
     }
 
     /// <summary>
