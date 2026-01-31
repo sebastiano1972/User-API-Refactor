@@ -17,7 +17,7 @@ internal sealed class GetUsersHandler(
                .GetRepository<Domain.Entities.User>();
 
             var users = await repository
-                            .GetAllByAsync(new AllUsers(request.Page, request.PageSize), cancellationToken)
+                            .GetAllByAsync(new AllUsers(request.Page, request.PageSize, request.OrderBy), cancellationToken)
                             .ConfigureAwait(false);
 
             return GetUsersResponse.Success(users);

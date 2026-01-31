@@ -29,13 +29,13 @@ public class UserControllerTests
         var mediator = Substitute.For<IMediator>();
 
         mediator
-           .Send(Arg.Is<GetUsersRequest>(r => r.Page == 0 && r.PageSize == 1), CancellationToken.None)
+           .Send(Arg.Is<GetUsersRequest>(r => r.Page == 0 && r.PageSize == 1 && r.OrderBy == "+somefield,-someotherfiled"), CancellationToken.None)
            .Returns(Task.FromResult(GetUsersResponse.Success(users)));
 
         var controller = new UserController(mediator);
 
         var result = await controller
-                        .GetAll(new PaginationParameters { Page = 0, PageSize = 1}, CancellationToken.None);
+                        .GetAll(new PaginationParameters { Page = 0, PageSize = 1, OrderBy = "+somefield,-someotherfiled"}, CancellationToken.None);
 
         var ok = result as OkObjectResult;
 

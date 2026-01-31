@@ -20,7 +20,7 @@ public sealed class UserController(IMediator mediator) : Controller
     public async Task<IActionResult> GetAll([FromQuery] PaginationParameters paginationParameters, CancellationToken cancellationToken)
     {
         var response = await mediator
-                            .Send(new GetUsersRequest(paginationParameters.Page, paginationParameters.PageSize), cancellationToken)
+                            .Send(new GetUsersRequest(paginationParameters.Page, paginationParameters.PageSize, paginationParameters.OrderBy), cancellationToken)
                             .ConfigureAwait(false);
 
         return response.IsSuccessful
