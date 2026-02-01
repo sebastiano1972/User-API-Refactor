@@ -68,7 +68,7 @@ public sealed class BookController(IMediator mediator) : Controller
     [HttpPost]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookDto))]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BookListDto))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] CreateBookDto createBookDto, CancellationToken cancellationToken)
     {
@@ -82,7 +82,7 @@ public sealed class BookController(IMediator mediator) : Controller
                             .ConfigureAwait(false);
 
         return response.IsSuccessful
-                   ? CreatedAtAction(nameof(Get), new { id = response.Payload!.Id }, response.Payload.ToDto())
+                   ? CreatedAtAction(nameof(Get), new { id = response.Payload!.Id }, response.Payload.ToListDto())
                    : Problem(statusCode: 500, title: "Cannot create book.", detail: response.Exception!.Message);
     }
 
@@ -95,7 +95,7 @@ public sealed class BookController(IMediator mediator) : Controller
     [HttpPut("{id:int}")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BookListDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateBookDto updateBookDto, CancellationToken cancellationToken)
@@ -111,7 +111,7 @@ public sealed class BookController(IMediator mediator) : Controller
 
         if (response.IsSuccessful)
         {
-            return Ok(response.Payload!.ToDto());
+            return Ok(response.Payload!.ToListDto());
         }
 
         return response.Exception == null

@@ -17,6 +17,7 @@ public sealed class BorrowingController(IMediator mediator) : Controller
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] BorrowABookDto borrowABookDto, CancellationToken cancellationToken)
     {
@@ -29,8 +30,13 @@ public sealed class BorrowingController(IMediator mediator) : Controller
                             .Send(new BorrowABookRequest(borrowABookDto), cancellationToken)
                             .ConfigureAwait(false);
 
-        return response.IsSuccessful
-                   ? Ok()
+        if (response.IsSuccessful)
+        {
+            return Ok();
+        }
+
+        return response.Exception == null
+                   ? BadRequest(new ProblemDetails { Status = 400, Title = response.Error })
                    : Problem(statusCode: 500, title: "Cannot borrow the book.", detail: response.Exception!.Message);
     }
 
@@ -41,6 +47,7 @@ public sealed class BorrowingController(IMediator mediator) : Controller
     /// <param name="cancellationToken">A cancellation token</param>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Delete([FromBody] ReturnABookDto returnABookDto, CancellationToken cancellationToken)
     {
@@ -48,8 +55,13 @@ public sealed class BorrowingController(IMediator mediator) : Controller
                             .Send(new ReturnABookRequest(returnABookDto), cancellationToken)
                             .ConfigureAwait(false);
 
-        return response.IsSuccessful
-                   ? NoContent()
+        if (response.IsSuccessful)
+        {
+            return Ok();
+        }
+
+        return response.Exception == null
+                   ? BadRequest(new ProblemDetails { Status = 400, Title = response.Error })
                    : Problem(statusCode: 500, title: "Cannot return the book.", detail: response.Exception!.Message);
     }
 }

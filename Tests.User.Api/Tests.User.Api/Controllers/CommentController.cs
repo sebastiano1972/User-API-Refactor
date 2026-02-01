@@ -17,6 +17,7 @@ public sealed class CommentController(IMediator mediator) : Controller
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CommentDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto, CancellationToken cancellationToken)
     {
