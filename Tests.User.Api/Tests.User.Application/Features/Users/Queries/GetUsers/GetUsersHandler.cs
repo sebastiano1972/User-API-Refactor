@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Tests.User.Application.Abstractions;
-using Tests.User.Domain.Specifications;
+﻿using AllUsers = Tests.User.Application.Specifications.AllUsers;
 
 namespace Tests.User.Application.Features.Users.Queries.GetUsers;
 

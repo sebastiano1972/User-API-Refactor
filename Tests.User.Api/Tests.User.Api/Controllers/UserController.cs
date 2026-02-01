@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using Tests.User.Domain.Exceptions;
+﻿using Tests.User.Application.Exceptions;
 
 namespace Tests.User.Api.Controllers;
 

@@ -1,4 +1,4 @@
-﻿namespace Tests.User.Domain.Abstractions;
+﻿namespace Tests.User.Application.Abstractions;
 
 public interface ISpecification<T> where T : Entity
 {

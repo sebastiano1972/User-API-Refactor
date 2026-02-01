@@ -1,6 +1,4 @@
-﻿using Tests.User.Application.DTOs.User;
-
-namespace Tests.User.Application.Mappers;
+﻿namespace Tests.User.Application.Mappers;
 
 public static class UserMapper
 {

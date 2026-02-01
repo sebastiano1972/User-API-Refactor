@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Tests.User.Application.Abstractions;
-using Tests.User.Domain.Enums;
-using Tests.User.Domain.Specifications;
+﻿using UserById = Tests.User.Application.Specifications.UserById;
 
 namespace Tests.User.Application.Features.Users.Commands.UpdateUser;
 

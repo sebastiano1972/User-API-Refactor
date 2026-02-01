@@ -1,4 +1,4 @@
-﻿namespace Tests.User.Domain.Enums;
+﻿namespace Tests.User.Application.Enums;
 
 public enum IsTraceable
 {

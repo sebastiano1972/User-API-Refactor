@@ -1,7 +1,6 @@
-﻿using System.Linq.Expressions;
-using Tests.User.Domain.Exceptions;
+﻿using Tests.User.Application.Exceptions;
 
-namespace Tests.User.Domain.Extensions;
+namespace Tests.User.Application.Extensions;
 
 internal static class SpecificationExtensions
 {

@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Tests.User.Application.Abstractions;
-using Tests.User.Application.Mappers;
-
-namespace Tests.User.Application.Features.Users.Commands.CreateUser;
+﻿namespace Tests.User.Application.Features.Users.Commands.CreateUser;
 
 internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
                                         IUnitOfWork unitOfWork) : IRequestHandler<CreateUserRequest, CreateUserResponse>

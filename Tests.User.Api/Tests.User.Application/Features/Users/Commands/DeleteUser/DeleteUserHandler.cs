@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Tests.User.Application.Abstractions;
-
-namespace Tests.User.Application.Features.Users.Commands.DeleteUser;
+﻿namespace Tests.User.Application.Features.Users.Commands.DeleteUser;
 
 internal sealed class DeleteUserHandler(ILogger<DeleteUserHandler> logger, 
                                         IUnitOfWork unitOfWork) : IRequestHandler<DeleteUserRequest, DeleteUserResponse>
