@@ -10,6 +10,8 @@ public sealed class AllUsers(int page, int pageSize, string orderBy, IsTraceable
 
     public bool Traceable => isTraceable == IsTraceable.Yes;
 
+    public List<string> Includes => [];
+
     public IQueryable<Domain.Entities.User> Apply(IQueryable<Domain.Entities.User> query)
     {
         return query

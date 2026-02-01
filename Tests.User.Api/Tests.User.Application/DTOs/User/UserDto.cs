@@ -24,4 +24,9 @@ public record UserDto
     /// The user's age.
     /// </summary>
     public byte Age { get; set; }
+
+    /// <summary>
+    /// The user's borrowed books.
+    /// </summary>
+    public List<BookListDto> BorrowedBooks { get; set; }
 }

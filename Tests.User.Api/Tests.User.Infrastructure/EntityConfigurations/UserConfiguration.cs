@@ -1,6 +1,4 @@
 ﻿
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace Tests.User.Infrastructure.EntityConfigurations;
 
 internal sealed class UserConfiguration : IEntityTypeConfiguration<Domain.Entities.User>
@@ -10,5 +8,13 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<Domain.Entiti
         builder.ToTable("Users");
         builder.Property(u => u.FirstName).HasMaxLength(255);
         builder.Property(u => u.LastName).HasMaxLength(255);
+
+        builder
+           .HasMany(u => u.BorrowedBooks)
+           .WithMany(b => b.Users)
+           .UsingEntity(b =>
+                        {
+                            b.ToTable("Borrowings");
+                        });
     }
 }

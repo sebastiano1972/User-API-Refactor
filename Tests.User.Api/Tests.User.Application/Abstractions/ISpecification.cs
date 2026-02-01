@@ -3,6 +3,7 @@
 public interface ISpecification<T> where T : Entity
 {
     public bool Traceable { get; }
+    public List<string> Includes { get; }
 
     IQueryable<T> Apply(IQueryable<T> query);
 }

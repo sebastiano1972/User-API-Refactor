@@ -4,7 +4,14 @@ internal sealed class Repository<T>(DatabaseContext context) : IRepository<T> wh
 {
     public async Task<T?> GetByAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
     {
-        var query = specification.Apply(context.Set<T>());
+        IQueryable<T> query = context.Set<T>();
+
+        foreach (var include in specification.Includes)
+        {
+            query = query.Include(include);
+        }
+
+        query = specification.Apply(query);
 
         query = specification.Traceable
                     ? query.AsTracking()
@@ -17,7 +24,14 @@ internal sealed class Repository<T>(DatabaseContext context) : IRepository<T> wh
 
     public async Task<List<T>> GetAllByAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
     {
-        var query = specification.Apply(context.Set<T>());
+        IQueryable<T> query = context.Set<T>();
+
+        foreach (var include in specification.Includes)
+        {
+            query = query.Include(include);
+        }
+
+        query = specification.Apply(query);
 
         query = specification.Traceable
                     ? query.AsTracking()

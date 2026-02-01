@@ -1,6 +1,4 @@
-﻿using Tests.User.Application.Exceptions;
-
-namespace Tests.User.Api.Controllers;
+﻿namespace Tests.User.Api.Controllers;
 
 /// <summary>
 ///     The user controller
@@ -17,7 +15,7 @@ public sealed class UserController(IMediator mediator) : Controller
     /// <param name="cancellationToken">A cancellation token</param>
     [HttpGet]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto[]))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserListDto[]))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> GetAll([FromQuery] PaginationParameters paginationParameters, CancellationToken cancellationToken)
@@ -28,7 +26,7 @@ public sealed class UserController(IMediator mediator) : Controller
 
         if (response.IsSuccessful)
         {
-            return Ok(response.Payload!.Select(u => u.ToDto()).ToList());
+            return Ok(response.Payload!.Select(u => u.ToListDto()).ToList());
         }
 
         return Problem(statusCode: response.Exception is MalformedOrderByParameterException ? 400 : 500,
@@ -57,7 +55,7 @@ public sealed class UserController(IMediator mediator) : Controller
             return Ok(response.Payload!.ToDto());
         }
 
-        return response.UserNotFound
+        return response.NotFound
                    ? NotFound(new ProblemDetails { Status = 404, Title = "User not found." })
                    : Problem(statusCode: 500, title: "Cannot retrieve user.", detail: response.Exception!.Message);
     }
@@ -137,6 +135,6 @@ public sealed class UserController(IMediator mediator) : Controller
 
         return response.IsSuccessful
                    ? NoContent()
-                   : Problem(statusCode: 500, title: "Cannot create user.", detail: response.Exception!.Message);
+                   : Problem(statusCode: 500, title: "Cannot delete user.", detail: response.Exception!.Message);
     }
 }

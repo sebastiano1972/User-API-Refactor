@@ -36,6 +36,9 @@ builder
 
 var app = builder.Build();
 
+await app
+   .SeedDb();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -1,6 +1,4 @@
-﻿using Tests.User.Application.Exceptions;
-
-namespace Tests.User.Application.Extensions;
+﻿namespace Tests.User.Application.Extensions;
 
 internal static class SpecificationExtensions
 {

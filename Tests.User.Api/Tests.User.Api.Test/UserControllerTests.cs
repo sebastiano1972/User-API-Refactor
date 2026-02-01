@@ -1,6 +1,3 @@
-using Tests.User.Api.Parameters;
-using Tests.User.Application.Features.Users.Queries.GetUsers;
-
 namespace Tests.User.Api.Test;
 
 using User = Domain.Entities.User;

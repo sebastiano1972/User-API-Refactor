@@ -12,14 +12,29 @@ public static class UserMapper
                };
     }
 
-    public static UserDto ToDto(this Domain.Entities.User user)
+    extension(Domain.Entities.User user)
     {
-        return new UserDto
-               {
-                   Id = user.Id,
-                   FirstName = user.FirstName,
-                   LastName = user.LastName,
-                   Age = user.Age
-               };
+        public UserDto ToDto()
+        {
+            return new UserDto
+                   {
+                       Id = user.Id,
+                       FirstName = user.FirstName,
+                       LastName = user.LastName,
+                       Age = user.Age,
+                       BorrowedBooks = user.BorrowedBooks.Select(bb => bb.ToListDto()).ToList()
+                   };
+        }
+
+        public UserListDto ToListDto()
+        {
+            return new UserListDto
+                   {
+                       Id = user.Id,
+                       FirstName = user.FirstName,
+                       LastName = user.LastName,
+                       Age = user.Age
+                   };
+        }
     }
 }
