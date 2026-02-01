@@ -6,94 +6,105 @@ internal static class HostExtensions
     {
         using var scope = host.Services.CreateScope();
 
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        var userRepository = unitOfWork.GetRepository<Domain.Entities.User>();
-        var bookRepository = unitOfWork.GetRepository<Book>();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        var user1 = userRepository.Add(new Domain.Entities.User
+        var user1 = (await mediator
+           .Send(new CreateUserRequest(new CreateUserDto
                                        {
                                            FirstName = "Sebastiano",
                                            LastName = "Serri",
                                            Age = 54
-                                       });
+                                       }))).Payload;
 
-        var user2 = userRepository
-           .Add(new Domain.Entities.User
-                {
-                    FirstName = "John",
-                    LastName = "Doe",
-                    Age = 54
-                });
+        var user2 = (await mediator
+           .Send(new CreateUserRequest(new CreateUserDto
+                                       {
+                                           FirstName = "John",
+                                           LastName = "Doe",
+                                           Age = 54
+                                       }))).Payload;
 
-        var user3 = userRepository
-           .Add(new Domain.Entities.User
-                {
-                    FirstName = "Jane",
-                    LastName = "Doe",
-                    Age = 54
-                });
+        var user3 = (await mediator
+           .Send(new CreateUserRequest(new CreateUserDto
+                                       {
+                                           FirstName = "Jane",
+                                           LastName = "Doe",
+                                           Age = 54
+                                       }))).Payload;
 
-        var book1 = bookRepository
-           .Add(new Book
-                {
-                    Title = "Dune",
-                    Author = "Frank Herbert",
-                    Comments =
-                    [
-                        new Comment
-                        {
-                            Author = user1,
-                            Title = "A great book!",
-                            Content = "Nothing to add."
-                        },
-                        new Comment
-                        {
-                            Author = user2,
-                            Title = "Superb",
-                            Content = "What should I say."
-                        },
-                        new Comment
-                        {
-                            Author = user3,
-                            Title = "Boring!",
-                            Content = "Cannot finish it!"
-                        }
-                    ]
-                });
+        var book1 = (await mediator
+                       .Send(new CreateBookRequest(new CreateBookDto()
+                                                   {
+                                                       Title = "Dune",
+                                                       Author = "Frank Herbert",
+                                                   }))).Payload;
 
-        var book2 = bookRepository
-           .Add(new Book
-                {
-                    Title = "The heretics of Dune",
-                    Author = "Frank Herbert",
-                    Comments =
-                    [
-                        new Comment
-                        {
-                            Author = user1,
-                            Title = "A great sequel!",
-                            Content = "Adding something would be too much."
-                        },
-                        new Comment
-                        {
-                            Author = user2,
-                            Title = "Not so great",
-                            Content = "I liked Dune more."
-                        },
-                        new Comment
-                        {
-                            Author = user3,
-                            Title = "Another boring book!",
-                            Content = "Cannot finish this book either!"
-                        }
-                    ]
-                });
+        await mediator
+           .Send(new CreateCommentRequest(new CreateCommentDto
+                                          {
+                                              UserId = user1!.Id,
+                                              BookId = book1!.Id,
+                                              Title = "A great book!",
+                                              Content = "Nothing to add."
+                                          }));
 
-        user2
-           .BorrowedBooks
-           .Add(book1);
+        await mediator
+           .Send(new CreateCommentRequest(new CreateCommentDto
+                                          {
+                                              UserId = user2!.Id,
+                                              BookId = book1!.Id,
+                                              Title = "Superb",
+                                              Content = "What should I say."
+                                          }));
 
-        await unitOfWork
-           .CompleteAsync();
+        await mediator
+           .Send(new CreateCommentRequest(new CreateCommentDto
+                                          {
+                                              UserId = user3!.Id,
+                                              BookId = book1!.Id,
+                                              Title = "Boring!",
+                                              Content = "Cannot finish it!"
+                                          }));
+
+        var book2 = (await mediator
+                        .Send(new CreateBookRequest(new CreateBookDto()
+                                                    {
+                                                        Title = "The heretics of Dune",
+                                                        Author = "Frank Herbert",
+                                                    }))).Payload;
+
+        await mediator
+           .Send(new CreateCommentRequest(new CreateCommentDto
+                                          {
+                                              UserId = user1!.Id,
+                                              BookId = book2!.Id,
+                                              Title = "A great sequel!",
+                                              Content = "Adding something would be too much."
+                                          }));
+
+        await mediator
+           .Send(new CreateCommentRequest(new CreateCommentDto
+                                          {
+                                              UserId = user2!.Id,
+                                              BookId = book2!.Id,
+                                              Title = "Not so great",
+                                              Content = "I liked Dune more."
+                                          }));
+
+        await mediator
+           .Send(new CreateCommentRequest(new CreateCommentDto
+                                          {
+                                              UserId = user3!.Id,
+                                              BookId = book2!.Id,
+                                              Title = "Another boring book!",
+                                              Content = "Cannot finish this book either!"
+                                          }));
+
+        await mediator
+           .Send(new BorrowABookRequest(new BorrowABookDto
+                                        {
+                                            UserId = user1!.Id,
+                                            BookId = book1!.Id
+                                        }));
     }
 }
