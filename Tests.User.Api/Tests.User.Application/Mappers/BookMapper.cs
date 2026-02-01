@@ -2,15 +2,6 @@
 
 public static class BookMapper
 {
-    public static Book ToEntity(this CreateBookDto createBookDto)
-    {
-        return new Book
-               {
-                   Title = createBookDto.Title,
-                   Author = createBookDto.Author
-               };
-    }
-
     extension(Book book)
     {
         public BookDto ToDto()

@@ -2,15 +2,6 @@
 
 public static class CommentMapper
 {
-    public static Comment ToEntity(this CreateCommentDto createCommentDto)
-    {
-        return new Comment
-               {
-                   Title = createCommentDto.Title,
-                   Content = createCommentDto.Content
-               };
-    }
-
     public static CommentDto ToDto(this Comment comment)
     {
         return new CommentDto

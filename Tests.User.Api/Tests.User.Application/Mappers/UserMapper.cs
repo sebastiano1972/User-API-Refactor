@@ -2,16 +2,6 @@
 
 public static class UserMapper
 {
-    public static Domain.Entities.User ToEntity(this CreateUserDto createUserDto)
-    {
-        return new Domain.Entities.User
-               {
-                   FirstName = createUserDto.FirstName,
-                   LastName = createUserDto.LastName,
-                   Age = createUserDto.Age!.Value
-               };
-    }
-
     extension(Domain.Entities.User user)
     {
         public UserDto ToDto()
