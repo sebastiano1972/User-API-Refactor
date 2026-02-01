@@ -2,6 +2,8 @@
 
 internal sealed class DeleteBookHandler(ILogger<DeleteBookHandler> logger,
                                         IBookService bookService,
+                                        IEventBag eventBag,
+                                        IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<DeleteBookRequest, DeleteBookResponse>
 {
     public async Task<DeleteBookResponse> Handle(DeleteBookRequest request, CancellationToken cancellationToken)
@@ -18,6 +20,9 @@ internal sealed class DeleteBookHandler(ILogger<DeleteBookHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return DeleteBookResponse.Success();
 

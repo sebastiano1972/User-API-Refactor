@@ -1,32 +1,26 @@
-﻿using AllUsers = Tests.User.Application.Specifications.AllUsers;
+﻿namespace Tests.User.Application.Features.Users.Queries.GetUsers;
 
-namespace Tests.User.Application.Features.Users.Queries.GetUsers;
-
-internal sealed class GetUsersHandler(
-    ILogger<GetUsersHandler> logger,
-    IUnitOfWork unitOfWork) : IRequestHandler<GetUsersRequest, GetUsersResponse>
+internal sealed class GetUsersHandler(ILogger<GetUsersHandler> logger,
+                                      ApplicationState applicationState) : IRequestHandler<GetUsersRequest, GetUsersResponse>
 {
-    public async Task<GetUsersResponse> Handle(GetUsersRequest request, CancellationToken cancellationToken)
+    public Task<GetUsersResponse> Handle(GetUsersRequest request, CancellationToken cancellationToken)
     {
 
         try
         {
-            var repository = unitOfWork
-               .GetRepository<Domain.Entities.User>();
+            var allUser = new AllUsers(request.Page, request.PageSize, request.OrderBy);
 
-            var users = await repository
-                            .GetAllByAsync(new AllUsers(request.Page, request.PageSize, request.OrderBy), cancellationToken)
-                            .ConfigureAwait(false);
+            var userList = allUser
+               .Apply(applicationState.UserList.Values.AsQueryable());
 
-            return GetUsersResponse.Success(users);
-
+            return Task.FromResult(GetUsersResponse.Success(userList.ToList()));
         }
         catch (Exception exception)
         {
 
             logger.LogError(exception, exception.Message);
 
-            return GetUsersResponse.Failure(exception);
+            return Task.FromResult(GetUsersResponse.Failure(exception));
 
         }
     }

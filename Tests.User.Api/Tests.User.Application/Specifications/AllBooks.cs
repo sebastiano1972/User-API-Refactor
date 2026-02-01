@@ -1,18 +1,18 @@
 ﻿namespace Tests.User.Application.Specifications;
 
-public sealed class AllBooks(int page, int pageSize, string orderBy, IsTraceable isTraceable = IsTraceable.No) : ISpecification<Book>
+public sealed class AllBooks(int page, int pageSize, string orderBy, IsTraceable isTraceable = IsTraceable.No) : ISpecification<BookListDto>
 {
-    private static readonly Dictionary<string, Expression<Func<Book, object?>>> Accessors = new(StringComparer.OrdinalIgnoreCase)
-                                                                                                            {
-                                                                                                                { "Title", user => user.Title },
-                                                                                                                { "Author", user => user.Author }
-                                                                                                            };
+    private static readonly Dictionary<string, Expression<Func<BookListDto, object?>>> Accessors = new(StringComparer.OrdinalIgnoreCase)
+                                                                                                   {
+                                                                                                       { "Title", user => user.Title },
+                                                                                                       { "Author", user => user.Author }
+                                                                                                   };
 
     public bool Traceable => isTraceable == IsTraceable.Yes;
 
     public List<string> Includes => [];
 
-    public IQueryable<Book> Apply(IQueryable<Book> query)
+    public IQueryable<BookListDto> Apply(IQueryable<BookListDto> query)
     {
         return query
               .ApplyOrderBy(Accessors, orderBy)

@@ -2,6 +2,8 @@
 
 internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger,
                                         IBookService bookService,
+                                        IEventBag eventBag,
+                                        IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<UpdateBookRequest, UpdateBookResponse>
 {
     public async Task<UpdateBookResponse> Handle(UpdateBookRequest request, CancellationToken cancellationToken)
@@ -29,6 +31,9 @@ internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return UpdateBookResponse.Success(book);
 

@@ -1,3 +1,5 @@
+using Tests.User.Application.Mappers;
+
 namespace Tests.User.Api.Test;
 
 using User = Domain.Entities.User;
@@ -27,7 +29,7 @@ public class UserControllerTests
 
         mediator
            .Send(Arg.Is<GetUsersRequest>(r => r.Page == 0 && r.PageSize == 1 && r.OrderBy == "+somefield,-someotherfiled"), CancellationToken.None)
-           .Returns(Task.FromResult(GetUsersResponse.Success(users)));
+           .Returns(Task.FromResult(GetUsersResponse.Success(users.Select(u=>u.ToListDto()).ToList())));
 
         var controller = new UserController(mediator);
 
@@ -38,7 +40,7 @@ public class UserControllerTests
 
         Assert.NotNull(ok);
         Assert.Equal(200, ok.StatusCode);
-        Assert.Equal(users.Count, ((List<UserDto>)ok.Value!).Count);
+        Assert.Equal(users.Count, ((List<UserListDto>)ok.Value!).Count);
     }
 
     [Fact]
@@ -57,7 +59,7 @@ public class UserControllerTests
 
         mediator
            .Send(Arg.Is<GetUserRequest>(r=>r.Id == userId), CancellationToken.None)
-           .Returns(Task.FromResult(GetUserResponse.Success(user)));
+           .Returns(Task.FromResult(GetUserResponse.Success(user.ToDto())));
 
         var controller = new UserController(mediator);
         

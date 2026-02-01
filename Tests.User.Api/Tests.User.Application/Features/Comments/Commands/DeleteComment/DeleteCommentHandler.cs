@@ -2,6 +2,8 @@
 
 internal sealed class DeleteCommentHandler(ILogger<DeleteCommentHandler> logger,
                                            IBookService bookService,
+                                           IEventBag eventBag,
+                                           IEventProcessor eventProcessor,
                                            IUnitOfWork unitOfWork) : IRequestHandler<DeleteCommentRequest, DeleteCommentResponse>
 {
     public async Task<DeleteCommentResponse> Handle(DeleteCommentRequest request, CancellationToken cancellationToken)
@@ -26,6 +28,9 @@ internal sealed class DeleteCommentHandler(ILogger<DeleteCommentHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return DeleteCommentResponse.Success();
 

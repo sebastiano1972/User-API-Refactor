@@ -1,6 +1,4 @@
-﻿using Tests.User.Application.Features.Books.Commands.UpdateBook;
-
-namespace Tests.User.Application.Features.Comments.Commands.DeleteComment;
+﻿namespace Tests.User.Application.Features.Comments.Commands.DeleteComment;
 
 public sealed record DeleteCommentResponse
 {

@@ -2,6 +2,8 @@
 
 internal sealed class DeleteUserHandler(ILogger<DeleteUserHandler> logger, 
                                         IUserService userService,
+                                        IEventBag eventBag,
+                                        IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<DeleteUserRequest, DeleteUserResponse>
 {
     public async Task<DeleteUserResponse> Handle(DeleteUserRequest request, CancellationToken cancellationToken)
@@ -18,6 +20,9 @@ internal sealed class DeleteUserHandler(ILogger<DeleteUserHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return DeleteUserResponse.Success();
 

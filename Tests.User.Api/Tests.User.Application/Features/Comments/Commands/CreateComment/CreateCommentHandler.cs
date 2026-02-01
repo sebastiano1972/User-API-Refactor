@@ -2,6 +2,8 @@
 
 internal sealed class CreateCommentHandler(ILogger<CreateCommentHandler> logger,
                                            IBookService bookService,
+                                           IEventBag eventBag,
+                                           IEventProcessor eventProcessor,
                                            IUnitOfWork unitOfWork) : IRequestHandler<CreateCommentRequest, CreateCommentResponse>
 {
     public async Task<CreateCommentResponse> Handle(CreateCommentRequest request, CancellationToken cancellationToken)
@@ -40,6 +42,9 @@ internal sealed class CreateCommentHandler(ILogger<CreateCommentHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return CreateCommentResponse.Success(comment);
 

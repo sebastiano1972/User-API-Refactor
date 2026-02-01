@@ -26,7 +26,7 @@ public sealed class UserController(IMediator mediator) : Controller
 
         if (response.IsSuccessful)
         {
-            return Ok(response.Payload!.Select(u => u.ToListDto()).ToList());
+            return Ok(response.Payload);
         }
 
         return Problem(statusCode: response.Exception is MalformedOrderByParameterException ? 400 : 500,
@@ -52,7 +52,7 @@ public sealed class UserController(IMediator mediator) : Controller
 
         if (response.IsSuccessful)
         {
-            return Ok(response.Payload!.ToDto());
+            return Ok(response.Payload);
         }
 
         return response.NotFound

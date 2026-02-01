@@ -2,6 +2,8 @@
 
 internal sealed class BorrowABookHandler(ILogger<BorrowABookHandler> logger,
                                          IUserService userService,
+                                         IEventBag eventBag,
+                                         IEventProcessor eventProcessor,
                                          IUnitOfWork unitOfWork) : IRequestHandler<BorrowABookRequest, BorrowABookResponse>
 {
     public async Task<BorrowABookResponse> Handle(BorrowABookRequest request, CancellationToken cancellationToken)
@@ -37,6 +39,9 @@ internal sealed class BorrowABookHandler(ILogger<BorrowABookHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return BorrowABookResponse.Success();
 

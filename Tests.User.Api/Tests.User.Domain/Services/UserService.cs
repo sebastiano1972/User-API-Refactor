@@ -1,15 +1,23 @@
 ﻿namespace Tests.User.Domain.Services;
 
-internal sealed class UserService : IUserService
+internal sealed class UserService(IEventBag eventBag) : IUserService
 {
     public Entities.User CreateUser(string firstName, string lastName, byte age)
     {
-        return new Entities.User
-               {
-                   FirstName = firstName,
-                   LastName = lastName,
-                   Age = age
-               };
+        var user = new Entities.User
+                   {
+                       FirstName = firstName,
+                       LastName = lastName,
+                       Age = age
+                   };
+
+        eventBag
+           .AddEvent(new UserCreated
+                     {
+                         User = user
+                     });
+
+        return user;
     }
 
     public Entities.User UpdateUser(Entities.User user, string firstName, string lastName, byte age)
@@ -18,15 +26,29 @@ internal sealed class UserService : IUserService
         user.LastName = lastName;
         user.Age = age;
 
+        eventBag
+           .AddEvent(new UserUpdated
+                     {
+                         User = user
+                     });
+
         return user;
     }
 
     public Entities.User DeleteUser(int id)
     {
-        return new Entities.User
-               {
-                   Id = id
-               };
+        var user = new Entities.User
+                   {
+                       Id = id
+                   };
+
+        eventBag
+           .AddEvent(new UserDeleted()
+                     {
+                         User = user
+                     });
+
+        return user;
     }
 
     public void BorrowBook(Entities.User user, Book book)
@@ -34,6 +56,13 @@ internal sealed class UserService : IUserService
         user
            .BorrowedBooks
            .Add(book);
+
+        eventBag
+           .AddEvent(new BookBorrowed()
+                     {
+                         User = user,
+                         Book = book
+                     });
     }
 
     public void ReturnBook(Entities.User user, Book book)
@@ -41,5 +70,12 @@ internal sealed class UserService : IUserService
         user
            .BorrowedBooks
            .Remove(book);
+
+        eventBag
+           .AddEvent(new BookReturned()
+                     {
+                         User = user,
+                         Book = book
+                     });
     }
 }

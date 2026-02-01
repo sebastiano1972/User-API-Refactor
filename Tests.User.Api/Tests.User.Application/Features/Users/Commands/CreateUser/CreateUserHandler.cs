@@ -2,6 +2,8 @@
 
 internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
                                         IUserService userService,
+                                        IEventBag eventBag,
+                                        IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<CreateUserRequest, CreateUserResponse>
 {
     public async Task<CreateUserResponse> Handle(CreateUserRequest request, CancellationToken cancellationToken)
@@ -22,6 +24,9 @@ internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return CreateUserResponse.Success(user);
 

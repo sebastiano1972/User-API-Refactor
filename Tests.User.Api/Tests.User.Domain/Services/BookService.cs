@@ -1,14 +1,22 @@
 ﻿namespace Tests.User.Domain.Services;
 
-internal sealed class BookService : IBookService
+internal sealed class BookService(IEventBag eventBag) : IBookService
 {
     public Book CreateBook(string title, string author)
     {
-        return new Book
-               {
-                   Title = title,
-                   Author = author
-               };
+        var book = new Book
+                   {
+                       Title = title,
+                       Author = author
+                   };
+
+        eventBag
+           .AddEvent(new BookCreated
+                     {
+                         Book = book
+                     });
+
+        return book;
     }
 
     public Book UpdateBook(Book book, string title, string author)
@@ -16,6 +24,11 @@ internal sealed class BookService : IBookService
         book.Title = title;
         book.Author = author;
 
+        eventBag
+           .AddEvent(new BookUpdated
+                     {
+                         Book = book
+                     });
         return book;
     }
 
@@ -32,6 +45,13 @@ internal sealed class BookService : IBookService
            .Comments
            .Add(comment);
 
+        eventBag
+           .AddEvent(new CommentCreated()
+                     {
+                         Book = book,
+                         Comment = comment
+                     });
+
         return comment;
     }
 
@@ -44,6 +64,14 @@ internal sealed class BookService : IBookService
         if (comment != null)
         {
             book.Comments.Remove(comment);
+
+            eventBag
+               .AddEvent(new CommentDeleted()
+                         {
+                             Book = book,
+                             Comment = comment
+                         });
+
             return comment;
         }
 
@@ -52,9 +80,17 @@ internal sealed class BookService : IBookService
 
     public Book DeleteBook(int id)
     {
-        return new Book
+        var book = new Book
                {
                    Id = id
                };
+
+        eventBag
+           .AddEvent(new BookDeleted()
+                     {
+                         Book = book
+                     });
+
+        return book;
     }
 }

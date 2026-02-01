@@ -1,23 +1,21 @@
-﻿namespace Tests.User.Application.Features.Books.Queries.GetBook;
+﻿using Tests.User.Application.Features.Users.Queries.GetUser;
 
-internal sealed class GetBookHandler(ILogger<GetBookHandler> logger, 
-                                     IUnitOfWork unitOfWork) : IRequestHandler<GetBookRequest, GetBookResponse>
+namespace Tests.User.Application.Features.Books.Queries.GetBook;
+
+internal sealed class GetBookHandler(ILogger<GetBookHandler> logger,
+                                     ApplicationState applicationState) : IRequestHandler<GetBookRequest, GetBookResponse>
 {
-    public async Task<GetBookResponse> Handle(GetBookRequest request, CancellationToken cancellationToken)
+    public Task<GetBookResponse> Handle(GetBookRequest request, CancellationToken cancellationToken)
     {
 
         try
         {
-            var repository = unitOfWork
-               .GetRepository<Book>();
+            if (applicationState.Books.TryGetValue(request.Id, out var book))
+            {
+                return Task.FromResult(GetBookResponse.Success(book));
+            }
 
-            var book = await repository
-                            .GetByAsync(new BookById(request.Id), cancellationToken)
-                            .ConfigureAwait(false);
-
-            return book == null
-                       ? GetBookResponse.BookWasNotFound()
-                       : GetBookResponse.Success(book);
+            return Task.FromResult(GetBookResponse.BookWasNotFound());
 
         }
         catch (Exception exception)
@@ -25,7 +23,7 @@ internal sealed class GetBookHandler(ILogger<GetBookHandler> logger,
 
             logger.LogError(exception, exception.Message);
 
-            return GetBookResponse.Failure(exception);
+            return Task.FromResult(GetBookResponse.Failure(exception));
 
         }
     }

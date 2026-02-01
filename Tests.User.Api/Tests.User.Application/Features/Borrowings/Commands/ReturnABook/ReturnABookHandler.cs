@@ -2,6 +2,8 @@
 
 internal sealed class ReturnABookHandler(ILogger<ReturnABookHandler> logger,
                                          IUserService userService,
+                                         IEventBag eventBag,
+                                         IEventProcessor eventProcessor,
                                          IUnitOfWork unitOfWork) : IRequestHandler<ReturnABookRequest, ReturnABookResponse>
 {
     public async Task<ReturnABookResponse> Handle(ReturnABookRequest request, CancellationToken cancellationToken)
@@ -37,6 +39,9 @@ internal sealed class ReturnABookHandler(ILogger<ReturnABookHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return ReturnABookResponse.Success();
 

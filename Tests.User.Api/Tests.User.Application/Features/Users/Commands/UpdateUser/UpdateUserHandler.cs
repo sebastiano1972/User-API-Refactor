@@ -4,6 +4,8 @@ namespace Tests.User.Application.Features.Users.Commands.UpdateUser;
 
 internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger,
                                         IUserService userService,
+                                        IEventBag eventBag,
+                                        IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserRequest, UpdateUserResponse>
 {
     public async Task<UpdateUserResponse> Handle(UpdateUserRequest request, CancellationToken cancellationToken)
@@ -31,6 +33,9 @@ internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return UpdateUserResponse.Success(user);
 

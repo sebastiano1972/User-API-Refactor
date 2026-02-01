@@ -2,6 +2,8 @@
 
 internal sealed class CreateBookHandler(ILogger<CreateBookHandler> logger,
                                         IBookService bookService,
+                                        IEventBag eventBag,
+                                        IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<CreateBookRequest, CreateBookResponse>
 {
     public async Task<CreateBookResponse> Handle(CreateBookRequest request, CancellationToken cancellationToken)
@@ -22,6 +24,9 @@ internal sealed class CreateBookHandler(ILogger<CreateBookHandler> logger,
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);
+
+            eventProcessor
+               .Publish(eventBag);
 
             return CreateBookResponse.Success(book);
 
