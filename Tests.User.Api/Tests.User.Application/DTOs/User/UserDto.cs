@@ -28,5 +28,5 @@ public record UserDto
     /// <summary>
     /// The user's borrowed books.
     /// </summary>
-    public List<BookListDto> BorrowedBooks { get; set; }
+    public List<BookListDto> BorrowedBooks { get; set; } = [];
 }
