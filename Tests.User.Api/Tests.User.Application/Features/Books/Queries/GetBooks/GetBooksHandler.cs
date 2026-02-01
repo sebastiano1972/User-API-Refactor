@@ -9,7 +9,7 @@ internal sealed class GetBooksHandler(ILogger<GetBooksHandler> logger,
         try
         {
             var repository = unitOfWork
-               .GetRepository<Domain.Entities.Book>();
+               .GetRepository<Book>();
 
             var books = await repository
                             .GetAllByAsync(new AllBooks(request.Page, request.PageSize, request.OrderBy), cancellationToken)
