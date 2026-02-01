@@ -1,21 +1,27 @@
 ﻿namespace Tests.User.Application.Features.Comments.Commands.DeleteComment;
 
 internal sealed class DeleteCommentHandler(ILogger<DeleteCommentHandler> logger,
+                                           IBookService bookService,
                                            IUnitOfWork unitOfWork) : IRequestHandler<DeleteCommentRequest, DeleteCommentResponse>
 {
     public async Task<DeleteCommentResponse> Handle(DeleteCommentRequest request, CancellationToken cancellationToken)
     {
         try
         {
-
             var repository = unitOfWork
-               .GetRepository<Domain.Entities.User>();
+               .GetRepository<Book>();
 
-            repository
-               .Delete(new Domain.Entities.User
-                       {
-                           Id = request.Id
-                       });
+            var book = await repository
+                          .GetByAsync(new BookById(request.Payload.BookId, IsTraceable.Yes), cancellationToken);
+
+            if (book == null)
+            {
+                return DeleteCommentResponse.Failure("Book does not exist.");
+            }
+
+            bookService
+               .RemoveComment(book, 
+                              request.Payload.CommentId);
 
             await unitOfWork
                  .CompleteAsync(cancellationToken)

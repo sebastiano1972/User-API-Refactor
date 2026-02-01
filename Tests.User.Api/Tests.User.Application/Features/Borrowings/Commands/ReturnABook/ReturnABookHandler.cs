@@ -1,6 +1,7 @@
 ﻿namespace Tests.User.Application.Features.Borrowings.Commands.ReturnABook;
 
 internal sealed class ReturnABookHandler(ILogger<ReturnABookHandler> logger,
+                                         IUserService userService,
                                          IUnitOfWork unitOfWork) : IRequestHandler<ReturnABookRequest, ReturnABookResponse>
 {
     public async Task<ReturnABookResponse> Handle(ReturnABookRequest request, CancellationToken cancellationToken)
@@ -30,9 +31,8 @@ internal sealed class ReturnABookHandler(ILogger<ReturnABookHandler> logger,
                 return ReturnABookResponse.Failure("Book not found.");
             }
 
-            user
-               .BorrowedBooks
-               .Remove(book);
+            userService
+               .ReturnBook(user, book);
 
             await unitOfWork
                  .CompleteAsync(cancellationToken)

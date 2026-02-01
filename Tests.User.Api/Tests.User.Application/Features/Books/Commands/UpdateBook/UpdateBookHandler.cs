@@ -1,6 +1,7 @@
 ﻿namespace Tests.User.Application.Features.Books.Commands.UpdateBook;
 
-internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger, 
+internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger,
+                                        IBookService bookService,
                                         IUnitOfWork unitOfWork) : IRequestHandler<UpdateBookRequest, UpdateBookResponse>
 {
     public async Task<UpdateBookResponse> Handle(UpdateBookRequest request, CancellationToken cancellationToken)
@@ -9,7 +10,7 @@ internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger,
         {
 
             var repository = unitOfWork
-               .GetRepository<Domain.Entities.Book>();
+               .GetRepository<Book>();
 
             var book = await repository
                             .GetByAsync(new BookById(request.Id, IsTraceable.Yes), cancellationToken)
@@ -20,8 +21,10 @@ internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger,
                 return UpdateBookResponse.Failure("Book does not exist.");
             }
 
-            book.Title = request.Payload.Title;
-            book.Author = request.Payload.Author;
+            bookService
+               .UpdateBook(book, 
+                           request.Payload.Title, 
+                           request.Payload.Author);
 
             await unitOfWork
                  .CompleteAsync(cancellationToken)

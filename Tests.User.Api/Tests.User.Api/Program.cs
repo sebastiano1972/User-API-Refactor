@@ -34,6 +34,10 @@ builder
    .Services
    .AddApplication();
 
+builder
+   .Services
+   .AddDomain();
+
 var app = builder.Build();
 
 await app

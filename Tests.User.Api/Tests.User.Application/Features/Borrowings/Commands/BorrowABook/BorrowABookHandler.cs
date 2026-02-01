@@ -1,8 +1,7 @@
-﻿using Tests.User.Application.Features.Comments.Commands.CreateComment;
-
-namespace Tests.User.Application.Features.Borrowings.Commands.BorrowABook;
+﻿namespace Tests.User.Application.Features.Borrowings.Commands.BorrowABook;
 
 internal sealed class BorrowABookHandler(ILogger<BorrowABookHandler> logger,
+                                         IUserService userService,
                                          IUnitOfWork unitOfWork) : IRequestHandler<BorrowABookRequest, BorrowABookResponse>
 {
     public async Task<BorrowABookResponse> Handle(BorrowABookRequest request, CancellationToken cancellationToken)
@@ -32,9 +31,8 @@ internal sealed class BorrowABookHandler(ILogger<BorrowABookHandler> logger,
                 return BorrowABookResponse.Failure("Book not found.");
             }
 
-            user
-               .BorrowedBooks
-               .Add(book);
+            userService
+               .BorrowBook(user, book);
 
             await unitOfWork
                  .CompleteAsync(cancellationToken)

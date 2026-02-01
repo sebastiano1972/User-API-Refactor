@@ -1,6 +1,7 @@
 ﻿namespace Tests.User.Application.Features.Books.Commands.DeleteBook;
 
-internal sealed class DeleteBookHandler(ILogger<DeleteBookHandler> logger, 
+internal sealed class DeleteBookHandler(ILogger<DeleteBookHandler> logger,
+                                        IBookService bookService,
                                         IUnitOfWork unitOfWork) : IRequestHandler<DeleteBookRequest, DeleteBookResponse>
 {
     public async Task<DeleteBookResponse> Handle(DeleteBookRequest request, CancellationToken cancellationToken)
@@ -9,13 +10,10 @@ internal sealed class DeleteBookHandler(ILogger<DeleteBookHandler> logger,
         {
 
             var repository = unitOfWork
-               .GetRepository<Domain.Entities.Book>();
+               .GetRepository<Book>();
 
             repository
-               .Delete(new Domain.Entities.Book
-                       {
-                           Id = request.Id
-                       });
+               .Delete(bookService.DeleteBook(request.Id));
 
             await unitOfWork
                  .CompleteAsync(cancellationToken)

@@ -1,15 +1,13 @@
 ﻿namespace Tests.User.Application.Features.Comments.Commands.CreateComment;
 
 internal sealed class CreateCommentHandler(ILogger<CreateCommentHandler> logger,
-                                        IUnitOfWork unitOfWork) : IRequestHandler<CreateCommentRequest, CreateCommentResponse>
+                                           IBookService bookService,
+                                           IUnitOfWork unitOfWork) : IRequestHandler<CreateCommentRequest, CreateCommentResponse>
 {
     public async Task<CreateCommentResponse> Handle(CreateCommentRequest request, CancellationToken cancellationToken)
     {
         try
         {
-
-            var commentRepository = unitOfWork
-               .GetRepository<Comment>();
 
             var userRepository = unitOfWork
                .GetRepository<Domain.Entities.User>();
@@ -33,16 +31,12 @@ internal sealed class CreateCommentHandler(ILogger<CreateCommentHandler> logger,
                 return CreateCommentResponse.Failure("Book not found.");
             }
 
-            var comment = request
-                         .Payload
-                         .ToEntity();
-
-            comment.Book = book;
-            comment.Author = author;
-
-            commentRepository
-               .Add(comment);
-
+            var comment = bookService
+               .AddComment(book,
+                           author,
+                           request.Payload.Title,
+                           request.Payload.Content);
+            
             await unitOfWork
                  .CompleteAsync(cancellationToken)
                  .ConfigureAwait(false);

@@ -1,6 +1,7 @@
 ﻿namespace Tests.User.Application.Features.Books.Commands.CreateBook;
 
 internal sealed class CreateBookHandler(ILogger<CreateBookHandler> logger,
+                                        IBookService bookService,
                                         IUnitOfWork unitOfWork) : IRequestHandler<CreateBookRequest, CreateBookResponse>
 {
     public async Task<CreateBookResponse> Handle(CreateBookRequest request, CancellationToken cancellationToken)
@@ -8,12 +9,12 @@ internal sealed class CreateBookHandler(ILogger<CreateBookHandler> logger,
         try
         {
 
-            var book = request
-                      .Payload
-                      .ToEntity();
+            var book = bookService
+               .CreateBook(request.Payload.Title, 
+                           request.Payload.Author);
 
             var repository = unitOfWork
-               .GetRepository<Domain.Entities.Book>();
+               .GetRepository<Book>();
 
             repository
                .Add(book);

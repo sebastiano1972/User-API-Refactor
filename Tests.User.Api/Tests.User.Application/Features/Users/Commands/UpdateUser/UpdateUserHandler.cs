@@ -2,7 +2,8 @@
 
 namespace Tests.User.Application.Features.Users.Commands.UpdateUser;
 
-internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger, 
+internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger,
+                                        IUserService userService,
                                         IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserRequest, UpdateUserResponse>
 {
     public async Task<UpdateUserResponse> Handle(UpdateUserRequest request, CancellationToken cancellationToken)
@@ -22,9 +23,10 @@ internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger,
                 return UpdateUserResponse.Failure("User does not exist.");
             }
 
-            user.FirstName = request.Payload.FirstName;
-            user.LastName = request.Payload.LastName;
-            user.Age = request.Payload.Age!.Value;
+            userService.UpdateUser(user,
+                                   request.Payload.FirstName,
+                                   request.Payload.LastName,
+                                   request.Payload.Age!.Value);
 
             await unitOfWork
                  .CompleteAsync(cancellationToken)

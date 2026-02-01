@@ -1,6 +1,7 @@
 ﻿namespace Tests.User.Application.Features.Users.Commands.CreateUser;
 
 internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
+                                        IUserService userService,
                                         IUnitOfWork unitOfWork) : IRequestHandler<CreateUserRequest, CreateUserResponse>
 {
     public async Task<CreateUserResponse> Handle(CreateUserRequest request, CancellationToken cancellationToken)
@@ -8,9 +9,9 @@ internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
         try
         {
 
-            var user = request
-                      .Payload
-                      .ToEntity();
+            var user = userService.CreateUser(request.Payload.FirstName,
+                                              request.Payload.LastName,
+                                              request.Payload.Age!.Value);
 
             var repository = unitOfWork
                .GetRepository<Domain.Entities.User>();

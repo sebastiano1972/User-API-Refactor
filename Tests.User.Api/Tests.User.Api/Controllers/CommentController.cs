@@ -9,9 +9,9 @@
 public sealed class CommentController(IMediator mediator) : Controller
 {
     /// <summary>
-    ///     Create a new comment
+    ///     Create a new comment for a book
     /// </summary>
-    /// <param name="createCommentDto">An object representing the user that is going to be created.</param>
+    /// <param name="createCommentDto">An object representing the comment that is going to be created.</param>
     /// <param name="cancellationToken">A cancellation token</param>
     [HttpPost]
     [Consumes("application/json")]
@@ -43,19 +43,25 @@ public sealed class CommentController(IMediator mediator) : Controller
     /// <summary>
     ///     Deletes a comment
     /// </summary>
-    /// <param name="id">ID of the comment</param>
+    /// <param name="removeCommentDto">An object representing the comment that is going to be removed.</param>
     /// <param name="cancellationToken">A cancellation token</param>
-    [HttpDelete("{id:int}")]
+    [HttpDelete()]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete([FromBody] RemoveCommentDto removeCommentDto, CancellationToken cancellationToken)
     {
         var response = await mediator
-                            .Send(new DeleteCommentRequest(id), cancellationToken)
+                            .Send(new DeleteCommentRequest(removeCommentDto), cancellationToken)
                             .ConfigureAwait(false);
 
-        return response.IsSuccessful
-                   ? NoContent()
+        if (response.IsSuccessful)
+        {
+            return NoContent();
+        }
+
+        return response.Exception == null
+                   ? BadRequest(new ProblemDetails { Status = 400, Title = response.Error })
                    : Problem(statusCode: 500, title: "Cannot delete comment.", detail: response.Exception!.Message);
     }
 }

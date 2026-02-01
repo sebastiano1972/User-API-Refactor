@@ -29,4 +29,5 @@ global using Tests.User.Application.Features.Users.Queries.GetUser;
 global using Tests.User.Application.Features.Users.Queries.GetUsers;
 global using Tests.User.Application.Mappers;
 global using Tests.User.Domain.Entities;
+global using Tests.User.Domain.Extensions;
 global using Tests.User.Infrastructure.Extensions;

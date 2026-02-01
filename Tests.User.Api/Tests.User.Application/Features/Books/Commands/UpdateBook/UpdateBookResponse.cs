@@ -3,11 +3,11 @@
 public sealed record UpdateBookResponse
 {
     public bool IsSuccessful { get; }
-    public Domain.Entities.Book? Payload { get; }
+    public Book? Payload { get; }
     public string Error { get; }
     public Exception? Exception { get; }
 
-    private UpdateBookResponse(bool isSuccessful, Domain.Entities.Book? payload = null, string error = "", Exception? exception = null)
+    private UpdateBookResponse(bool isSuccessful, Book? payload = null, string error = "", Exception? exception = null)
     {
         IsSuccessful = isSuccessful;
         Payload = payload;
@@ -15,7 +15,7 @@ public sealed record UpdateBookResponse
         Exception = exception;
     }
 
-    public static UpdateBookResponse Success(Domain.Entities.Book book) => new (true, payload: book);
+    public static UpdateBookResponse Success(Book book) => new (true, payload: book);
     public static UpdateBookResponse Failure(Exception exception) => new(false, exception: exception);
     public static UpdateBookResponse Failure(string error) => new (false, error: error);
 }
