@@ -6,6 +6,10 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddDbContext<DatabaseContext>();
 
+        serviceCollection.AddSingleton<EventProcessor>();
+        serviceCollection.AddSingleton<IHostedService>(p => p.GetRequiredService<EventProcessor>());
+        serviceCollection.AddSingleton<IEventProcessor>(p => p.GetRequiredService<EventProcessor>());
+
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return serviceCollection;

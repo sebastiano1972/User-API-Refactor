@@ -1,6 +1,6 @@
 ﻿namespace Tests.User.Application.State;
 
-internal class ApplicationState
+public sealed class ApplicationState
 {
     public ConcurrentDictionary<int, UserDto> Users { get; } = [];
     public ConcurrentDictionary<int, UserListDto> UserList { get; } = [];

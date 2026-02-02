@@ -1,11 +1,12 @@
-﻿namespace Tests.User.Application.EventSourcing;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Infrastructure.EventSourcing;
 
 internal class EventProcessor : BackgroundService, IEventProcessor
 {
-    private readonly Lock _lock = new();
     private readonly SemaphoreSlim _semaphore = new(0);
     private readonly ApplicationState _applicationState;
-    private readonly ConcurrentQueue<DomainEvent> _events = new();
+    private readonly ConcurrentQueue<EventCollection> _events = new();
 
     private readonly Dictionary<Type, Action<DomainEvent>> _eventProcessors = [];
 
@@ -25,16 +26,10 @@ internal class EventProcessor : BackgroundService, IEventProcessor
         _eventProcessors.Add(typeof(BookReturned), ProcessReturnedBook);
     }
 
-    public void Publish(IEventBag eventBag)
+    public void Publish(EventCollection eventCollection)
     {
-        lock (_lock)
-        {
-            foreach (var @event in eventBag.Events)
-            {
-                _events.Enqueue(@event);
-                _semaphore.Release();
-            }
-        }
+        _events.Enqueue(eventCollection);
+        _semaphore.Release();
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,7 +41,12 @@ internal class EventProcessor : BackgroundService, IEventProcessor
                 await _semaphore
                    .WaitAsync(stoppingToken);
 
-                if (_events.TryDequeue(out var @event))
+                if (!_events.TryDequeue(out var eventsCollection))
+                {
+                    continue;
+                }
+
+                foreach (var @event in eventsCollection.Events)
                 {
                     _eventProcessors[@event.GetType()](@event);
                 }

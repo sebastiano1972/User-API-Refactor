@@ -137,4 +137,70 @@ public sealed class UserController(IMediator mediator) : Controller
                    ? NoContent()
                    : Problem(statusCode: 500, title: "Cannot delete user.", detail: response.Exception!.Message);
     }
+
+    /// <summary>
+    ///     Borrow a book
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="bookId">The book id.</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    [HttpPost("{userId:int}/borrow/{bookId:int}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Create([FromRoute] int userId, [FromRoute] int bookId, CancellationToken cancellationToken)
+    {
+        var borrowABookDto = new BorrowABookDto
+                             {
+                                 UserId = userId,
+                                 BookId = bookId
+                             };
+
+        var response = await mediator
+                            .Send(new BorrowABookRequest(borrowABookDto), cancellationToken)
+                            .ConfigureAwait(false);
+
+        if (response.IsSuccessful)
+        {
+            return Ok();
+        }
+
+        return response.Exception == null
+                   ? BadRequest(new ProblemDetails { Status = 400, Title = response.Error })
+                   : Problem(statusCode: 500, title: "Cannot borrow the book.", detail: response.Exception!.Message);
+    }
+
+    /// <summary>
+    ///     Returns a book
+    /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="bookId">The book id.</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    [HttpDelete("{userId:int}/borrow/{bookId:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Delete([FromRoute] int userId, [FromRoute] int bookId, CancellationToken cancellationToken)
+    {
+        var returnABookDto = new ReturnABookDto()
+                             {
+                                 UserId = userId,
+                                 BookId = bookId
+                             };
+
+        var response = await mediator
+                            .Send(new ReturnABookRequest(returnABookDto), cancellationToken)
+                            .ConfigureAwait(false);
+
+        if (response.IsSuccessful)
+        {
+            return Ok();
+        }
+
+        return response.Exception == null
+                   ? BadRequest(new ProblemDetails { Status = 400, Title = response.Error })
+                   : Problem(statusCode: 500, title: "Cannot return the book.", detail: response.Exception!.Message);
+    }
 }

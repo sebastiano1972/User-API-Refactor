@@ -6,10 +6,6 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddSingleton<ApplicationState>();
 
-        serviceCollection.AddSingleton<EventProcessor>();
-        serviceCollection.AddSingleton<IHostedService>(p => p.GetRequiredService<EventProcessor>());
-        serviceCollection.AddSingleton<IEventProcessor>(p => p.GetRequiredService<EventProcessor>());
-
         serviceCollection.AddMediatR(configuration =>
                                      {
                                          configuration.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);

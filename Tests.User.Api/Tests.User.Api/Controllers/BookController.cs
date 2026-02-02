@@ -137,4 +137,77 @@ public sealed class BookController(IMediator mediator) : Controller
                    ? NoContent()
                    : Problem(statusCode: 500, title: "Cannot delete book.", detail: response.Exception!.Message);
     }
+
+    /// <summary>
+    ///     Create a new comment for a book
+    /// </summary>
+    /// <param name="id">The id of the book.</param>
+    /// <param name="createCommentPayload">The comment data</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    [HttpPost("{id:int}/comments")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CommentDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Create([FromRoute] int id, [FromBody] CreateCommentPayload createCommentPayload, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var createCommentDto = new CreateCommentDto
+                               {
+                                   BookId = id,
+                                   UserId = createCommentPayload.UserId,
+                                   Title = createCommentPayload.Title,
+                                   Content = createCommentPayload.Content
+                               };
+
+        var response = await mediator
+                            .Send(new CreateCommentRequest(createCommentDto), cancellationToken)
+                            .ConfigureAwait(false);
+
+        if (response.IsSuccessful)
+        {
+            return Ok(response.Payload!.ToDto());
+        }
+
+        return response.Exception == null
+                   ? BadRequest(new ProblemDetails { Status = 400, Title = response.Error })
+                   : Problem(statusCode: 500, title: "Cannot create comment.", detail: response.Exception!.Message);
+    }
+
+    /// <summary>
+    ///     Deletes a comment
+    /// </summary>
+    /// <param name="bookId">The book id.</param>
+    /// <param name="commentId">The comment id.</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    [HttpDelete("{bookId:int}/comments/{commentId:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Delete([FromRoute] int bookId, [FromRoute] int commentId, CancellationToken cancellationToken)
+    {
+        var removeCommentDto = new RemoveCommentDto
+                               {
+                                   BookId = bookId,
+                                   CommentId = commentId
+                               };
+
+        var response = await mediator
+                            .Send(new DeleteCommentRequest(removeCommentDto), cancellationToken)
+                            .ConfigureAwait(false);
+
+        if (response.IsSuccessful)
+        {
+            return NoContent();
+        }
+
+        return response.Exception == null
+                   ? BadRequest(new ProblemDetails { Status = 400, Title = response.Error })
+                   : Problem(statusCode: 500, title: "Cannot delete comment.", detail: response.Exception!.Message);
+    }
 }

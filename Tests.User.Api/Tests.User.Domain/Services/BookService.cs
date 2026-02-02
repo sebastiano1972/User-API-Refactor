@@ -1,6 +1,6 @@
 ﻿namespace Tests.User.Domain.Services;
 
-internal sealed class BookService(IEventBag eventBag) : IBookService
+internal sealed class BookService(EventCollection eventCollection) : IBookService
 {
     public Book CreateBook(string title, string author)
     {
@@ -10,7 +10,7 @@ internal sealed class BookService(IEventBag eventBag) : IBookService
                        Author = author
                    };
 
-        eventBag
+        eventCollection
            .AddEvent(new BookCreated
                      {
                          Book = book
@@ -24,7 +24,7 @@ internal sealed class BookService(IEventBag eventBag) : IBookService
         book.Title = title;
         book.Author = author;
 
-        eventBag
+        eventCollection
            .AddEvent(new BookUpdated
                      {
                          Book = book
@@ -45,7 +45,7 @@ internal sealed class BookService(IEventBag eventBag) : IBookService
            .Comments
            .Add(comment);
 
-        eventBag
+        eventCollection
            .AddEvent(new CommentCreated()
                      {
                          Book = book,
@@ -65,7 +65,7 @@ internal sealed class BookService(IEventBag eventBag) : IBookService
         {
             book.Comments.Remove(comment);
 
-            eventBag
+            eventCollection
                .AddEvent(new CommentDeleted()
                          {
                              Book = book,
@@ -85,7 +85,7 @@ internal sealed class BookService(IEventBag eventBag) : IBookService
                    Id = id
                };
 
-        eventBag
+        eventCollection
            .AddEvent(new BookDeleted()
                      {
                          Book = book

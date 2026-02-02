@@ -6,6 +6,7 @@ global using MediatR;
 global using Microsoft.AspNetCore.Mvc;
 global using Tests.User.Api.Extensions;
 global using Tests.User.Api.Parameters;
+global using Tests.User.Api.Payloads;
 global using Tests.User.Application.Abstractions;
 global using Tests.User.Application.DTOs.Book;
 global using Tests.User.Application.DTOs.Borrowings;

@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Books.Commands.CreateBook;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Books.Commands.CreateBook;
 
 internal sealed class CreateBookHandler(ILogger<CreateBookHandler> logger,
                                         IBookService bookService,
-                                        IEventBag eventBag,
+                                        EventCollection eventCollection,
                                         IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<CreateBookRequest, CreateBookResponse>
 {
@@ -26,7 +28,7 @@ internal sealed class CreateBookHandler(ILogger<CreateBookHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return CreateBookResponse.Success(book);
 

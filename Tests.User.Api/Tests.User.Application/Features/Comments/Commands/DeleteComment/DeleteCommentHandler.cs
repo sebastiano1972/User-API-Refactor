@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Comments.Commands.DeleteComment;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Comments.Commands.DeleteComment;
 
 internal sealed class DeleteCommentHandler(ILogger<DeleteCommentHandler> logger,
                                            IBookService bookService,
-                                           IEventBag eventBag,
+                                           EventCollection eventCollection,
                                            IEventProcessor eventProcessor,
                                            IUnitOfWork unitOfWork) : IRequestHandler<DeleteCommentRequest, DeleteCommentResponse>
 {
@@ -30,7 +32,7 @@ internal sealed class DeleteCommentHandler(ILogger<DeleteCommentHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return DeleteCommentResponse.Success();
 

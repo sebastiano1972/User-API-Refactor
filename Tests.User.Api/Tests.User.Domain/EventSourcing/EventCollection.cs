@@ -1,6 +1,6 @@
 ﻿namespace Tests.User.Domain.EventSourcing;
 
-internal class EventBag : IEventBag
+public class EventCollection
 {
     public Queue<DomainEvent> Events { get; } = new ();
 

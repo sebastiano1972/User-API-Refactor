@@ -1,6 +1,8 @@
-﻿namespace Tests.User.Application.Abstractions;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Abstractions;
 
 public interface IEventProcessor
 {
-    void Publish(IEventBag eventBag);
+    void Publish(EventCollection eventCollection);
 }

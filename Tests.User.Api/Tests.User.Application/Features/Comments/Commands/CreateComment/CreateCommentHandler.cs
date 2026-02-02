@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Comments.Commands.CreateComment;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Comments.Commands.CreateComment;
 
 internal sealed class CreateCommentHandler(ILogger<CreateCommentHandler> logger,
                                            IBookService bookService,
-                                           IEventBag eventBag,
+                                           EventCollection eventCollection,
                                            IEventProcessor eventProcessor,
                                            IUnitOfWork unitOfWork) : IRequestHandler<CreateCommentRequest, CreateCommentResponse>
 {
@@ -44,7 +46,7 @@ internal sealed class CreateCommentHandler(ILogger<CreateCommentHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return CreateCommentResponse.Success(comment);
 

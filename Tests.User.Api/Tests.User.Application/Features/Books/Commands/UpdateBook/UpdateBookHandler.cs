@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Books.Commands.UpdateBook;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Books.Commands.UpdateBook;
 
 internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger,
                                         IBookService bookService,
-                                        IEventBag eventBag,
+                                        EventCollection eventCollection,
                                         IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<UpdateBookRequest, UpdateBookResponse>
 {
@@ -33,7 +35,7 @@ internal sealed class UpdateBookHandler(ILogger<UpdateBookHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return UpdateBookResponse.Success(book);
 

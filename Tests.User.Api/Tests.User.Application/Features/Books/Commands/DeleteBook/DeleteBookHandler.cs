@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Books.Commands.DeleteBook;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Books.Commands.DeleteBook;
 
 internal sealed class DeleteBookHandler(ILogger<DeleteBookHandler> logger,
                                         IBookService bookService,
-                                        IEventBag eventBag,
+                                        EventCollection eventCollection,
                                         IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<DeleteBookRequest, DeleteBookResponse>
 {
@@ -22,7 +24,7 @@ internal sealed class DeleteBookHandler(ILogger<DeleteBookHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return DeleteBookResponse.Success();
 

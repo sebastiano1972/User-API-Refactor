@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Users.Commands.CreateUser;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Users.Commands.CreateUser;
 
 internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
                                         IUserService userService,
-                                        IEventBag eventBag,
+                                        EventCollection eventCollection,
                                         IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<CreateUserRequest, CreateUserResponse>
 {
@@ -26,7 +28,7 @@ internal sealed class CreateUserHandler(ILogger<CreateUserHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return CreateUserResponse.Success(user);
 

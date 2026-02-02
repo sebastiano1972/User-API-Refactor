@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Users.Commands.DeleteUser;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Users.Commands.DeleteUser;
 
 internal sealed class DeleteUserHandler(ILogger<DeleteUserHandler> logger, 
                                         IUserService userService,
-                                        IEventBag eventBag,
+                                        EventCollection eventCollection,
                                         IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<DeleteUserRequest, DeleteUserResponse>
 {
@@ -22,7 +24,7 @@ internal sealed class DeleteUserHandler(ILogger<DeleteUserHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return DeleteUserResponse.Success();
 

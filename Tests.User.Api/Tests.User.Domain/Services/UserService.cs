@@ -1,6 +1,6 @@
 ﻿namespace Tests.User.Domain.Services;
 
-internal sealed class UserService(IEventBag eventBag) : IUserService
+internal sealed class UserService(EventCollection eventCollection) : IUserService
 {
     public Entities.User CreateUser(string firstName, string lastName, byte age)
     {
@@ -11,7 +11,7 @@ internal sealed class UserService(IEventBag eventBag) : IUserService
                        Age = age
                    };
 
-        eventBag
+        eventCollection
            .AddEvent(new UserCreated
                      {
                          User = user
@@ -26,7 +26,7 @@ internal sealed class UserService(IEventBag eventBag) : IUserService
         user.LastName = lastName;
         user.Age = age;
 
-        eventBag
+        eventCollection
            .AddEvent(new UserUpdated
                      {
                          User = user
@@ -42,7 +42,7 @@ internal sealed class UserService(IEventBag eventBag) : IUserService
                        Id = id
                    };
 
-        eventBag
+        eventCollection
            .AddEvent(new UserDeleted()
                      {
                          User = user
@@ -57,7 +57,7 @@ internal sealed class UserService(IEventBag eventBag) : IUserService
            .BorrowedBooks
            .Add(book);
 
-        eventBag
+        eventCollection
            .AddEvent(new BookBorrowed()
                      {
                          User = user,
@@ -71,7 +71,7 @@ internal sealed class UserService(IEventBag eventBag) : IUserService
            .BorrowedBooks
            .Remove(book);
 
-        eventBag
+        eventCollection
            .AddEvent(new BookReturned()
                      {
                          User = user,

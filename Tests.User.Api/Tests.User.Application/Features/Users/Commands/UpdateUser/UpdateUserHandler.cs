@@ -1,10 +1,11 @@
-﻿using UserById = Tests.User.Application.Specifications.UserById;
+﻿using Tests.User.Domain.EventSourcing;
+using UserById = Tests.User.Application.Specifications.UserById;
 
 namespace Tests.User.Application.Features.Users.Commands.UpdateUser;
 
 internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger,
                                         IUserService userService,
-                                        IEventBag eventBag,
+                                        EventCollection eventCollection,
                                         IEventProcessor eventProcessor,
                                         IUnitOfWork unitOfWork) : IRequestHandler<UpdateUserRequest, UpdateUserResponse>
 {
@@ -35,7 +36,7 @@ internal sealed class UpdateUserHandler(ILogger<UpdateUserHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return UpdateUserResponse.Success(user);
 

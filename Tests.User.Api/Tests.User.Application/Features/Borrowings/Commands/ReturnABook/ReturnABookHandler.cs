@@ -1,8 +1,10 @@
-﻿namespace Tests.User.Application.Features.Borrowings.Commands.ReturnABook;
+﻿using Tests.User.Domain.EventSourcing;
+
+namespace Tests.User.Application.Features.Borrowings.Commands.ReturnABook;
 
 internal sealed class ReturnABookHandler(ILogger<ReturnABookHandler> logger,
                                          IUserService userService,
-                                         IEventBag eventBag,
+                                         EventCollection eventCollection,
                                          IEventProcessor eventProcessor,
                                          IUnitOfWork unitOfWork) : IRequestHandler<ReturnABookRequest, ReturnABookResponse>
 {
@@ -41,7 +43,7 @@ internal sealed class ReturnABookHandler(ILogger<ReturnABookHandler> logger,
                  .ConfigureAwait(false);
 
             eventProcessor
-               .Publish(eventBag);
+               .Publish(eventCollection);
 
             return ReturnABookResponse.Success();
 
